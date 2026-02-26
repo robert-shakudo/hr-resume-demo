@@ -12,7 +12,7 @@ export async function fetchApplicants(): Promise<Applicant[]> {
   return r.json()
 }
 
-export async function scoreAll(): Promise<{ scored: number; results: any[] }> {
+export async function scoreAll(): Promise<{ scored: number; auto_promoted: number; threshold: number; results: any[] }> {
   const r = await fetch(`${BASE}/score/all`, { method: 'POST' })
   return r.json()
 }
@@ -23,6 +23,23 @@ export async function updateStatus(id: string, status: string): Promise<void> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
   })
+}
+
+export async function previewEmails(ids: string[]): Promise<{ previews: EmailPreview[] }> {
+  const r = await fetch(`${BASE}/email/preview`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ applicant_ids: ids }),
+  })
+  return r.json()
+}
+
+export interface EmailPreview {
+  id: string
+  name: string
+  email: string
+  subject: string
+  body: string
 }
 
 export async function bulkAction(ids: string[], action: string): Promise<any> {
@@ -39,6 +56,41 @@ export async function simulateReply(applicant_id: string, message: string): Prom
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ applicant_id, message }),
+  })
+  return r.json()
+}
+
+export async function fetchSettings(): Promise<any> {
+  const r = await fetch(`${BASE}/settings`)
+  return r.json()
+}
+
+export async function saveSettings(settings: any): Promise<any> {
+  const r = await fetch(`${BASE}/settings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings),
+  })
+  return r.json()
+}
+
+export async function paycomRefresh(): Promise<{ refreshed: boolean; applicant_count: number }> {
+  const r = await fetch(`${BASE}/paycom/refresh`, { method: 'POST' })
+  return r.json()
+}
+
+export async function uploadResume(data: {
+  first_name: string
+  last_name: string
+  email: string
+  location: string
+  distance_miles: number
+  resume_text: string
+}): Promise<any> {
+  const r = await fetch(`${BASE}/upload-resume`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   })
   return r.json()
 }
