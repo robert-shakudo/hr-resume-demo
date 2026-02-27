@@ -91,3 +91,56 @@ See [SKILL.md](./SKILL.md) for the full command reference.
 - Python 3.10+ (pre-installed in Kaji sessions)
 - No extra packages — uses Python stdlib only
 - HR app backend running at `HR_APP_URL`
+
+---
+
+## Register the MCP Server
+
+Once installed, register the MCP server so Kaji can call HR tools natively (no shell needed).
+
+### opencode.json config
+
+Add to `~/.config/opencode/opencode.json` under `"mcp"`:
+
+```json
+"hr-resume-processor": {
+  "type": "local",
+  "command": ["python", "/root/gitrepos/.claude/skills/hr-resume-processor/mcp_server.py"],
+  "enabled": true,
+  "environment": {
+    "HR_APP_URL": "https://hr-resume-demo.dev.hyperplane.dev"
+  }
+}
+```
+
+### Install MCP dependency
+
+```bash
+pip install "mcp>=1.0.0" "fastmcp>=2.0.0"
+```
+
+### Verify tools are available
+
+Restart your Kaji session. In Mattermost:
+
+```
+@kaji show my available tools
+```
+
+You should see `hr_pipeline_summary`, `hr_list_candidates`, `hr_score_all`, etc.
+
+---
+
+## Architecture
+
+```
+Mattermost Thread
+      ↓
+  Kaji (reads SKILL.md → knows HR domain)
+      ↓
+  MCP Tools (hr_list_candidates, hr_score_all, ...)
+      ↓
+  HR App REST API (https://hr-resume-demo.dev.hyperplane.dev)
+      ↓
+  Mock Paycom + AI Scorer + Email Engine
+```

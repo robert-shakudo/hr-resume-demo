@@ -416,3 +416,44 @@ All commands output Mattermost-compatible markdown. Key patterns:
 
 **"Refresh from Paycom"**
 → `python skill/hr_client.py refresh`
+
+---
+
+## MCP Tools Reference
+
+When the MCP server is registered, Kaji calls these tools directly (no shell commands needed):
+
+| Tool | Description |
+|------|-------------|
+| `hr_pipeline_summary` | Full pipeline snapshot — call this first |
+| `hr_list_candidates` | List/filter candidates by status, score, or count |
+| `hr_get_candidate` | Full profile for a specific applicant ID |
+| `hr_search_candidates` | Find candidates by name |
+| `hr_score_all` | Run AI scoring on all candidates, auto-promote top |
+| `hr_score_candidate` | Score a single candidate by ID |
+| `hr_send_invites` | Send personalized invite emails (mock or real) |
+| `hr_book_interviews` | Book calendar slots, move to Booked |
+| `hr_update_status` | Manually move a candidate to any status |
+| `hr_refresh_paycom` | Reset all data from Paycom |
+| `hr_get_settings` | View scoring thresholds, email mode, questions |
+
+### Register MCP server in opencode config
+
+Add to your `~/.config/opencode/opencode.json` under `"mcp"`:
+
+```json
+{
+  "mcp": {
+    "hr-resume-processor": {
+      "type": "local",
+      "command": ["python", "/root/gitrepos/.claude/skills/hr-resume-processor/mcp_server.py"],
+      "enabled": true,
+      "environment": {
+        "HR_APP_URL": "https://hr-resume-demo.dev.hyperplane.dev"
+      }
+    }
+  }
+}
+```
+
+After saving, restart your Kaji session. The tools will be available directly.
