@@ -25,7 +25,18 @@ export async function updateStatus(id: string, status: string): Promise<void> {
   })
 }
 
-export async function previewEmails(ids: string[]): Promise<{ previews: EmailPreview[] }> {
+export interface EmailPreview {
+  id: string
+  name: string
+  email: string
+  actual_email: string
+  subject: string
+  body: string
+  questions: string[]
+  mode: string
+}
+
+export async function previewEmails(ids: string[]): Promise<{ previews: EmailPreview[]; mode: string }> {
   const r = await fetch(`${BASE}/email/preview`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -34,20 +45,17 @@ export async function previewEmails(ids: string[]): Promise<{ previews: EmailPre
   return r.json()
 }
 
-export interface EmailPreview {
-  id: string
-  name: string
-  email: string
-  subject: string
-  body: string
-}
-
 export async function bulkAction(ids: string[], action: string): Promise<any> {
   const r = await fetch(`${BASE}/bulk`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ applicant_ids: ids, action }),
   })
+  return r.json()
+}
+
+export async function simulateResponse(applicant_id: string): Promise<any> {
+  const r = await fetch(`${BASE}/simulate-response/${applicant_id}`, { method: 'POST' })
   return r.json()
 }
 
@@ -80,12 +88,8 @@ export async function paycomRefresh(): Promise<{ refreshed: boolean; applicant_c
 }
 
 export async function uploadResume(data: {
-  first_name: string
-  last_name: string
-  email: string
-  location: string
-  distance_miles: number
-  resume_text: string
+  first_name: string; last_name: string; email: string
+  location: string; distance_miles: number; resume_text: string
 }): Promise<any> {
   const r = await fetch(`${BASE}/upload-resume`, {
     method: 'POST',

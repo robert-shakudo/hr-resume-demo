@@ -1,4 +1,4 @@
-export type ApplicantStatus = 'new' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired'
+export type ApplicantStatus = 'new' | 'reviewing' | 'shortlisted' | 'awaiting_reply' | 'booked' | 'rejected' | 'hired'
 
 export interface Experience {
   title: string
@@ -29,6 +29,24 @@ export interface ScoreData {
   reasons: string[]
 }
 
+export interface ResponseData {
+  text: string
+  score: number
+  max_score: number
+  recommendation: string
+  breakdown: Record<string, ScoreBreakdown>
+  reasons: string[]
+  received_at: string
+}
+
+export interface CalendarEvent {
+  title: string
+  date: string
+  time: string
+  location: string
+  duration: string
+}
+
 export interface Applicant {
   id: string
   first_name: string
@@ -41,6 +59,9 @@ export interface Applicant {
   status: ApplicantStatus
   resume: Resume
   score_data?: ScoreData
+  response_data?: ResponseData
+  calendar_event?: CalendarEvent
+  email_sent_at?: string
 }
 
 export interface JobPosting {
